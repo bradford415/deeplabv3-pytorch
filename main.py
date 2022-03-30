@@ -52,6 +52,7 @@ def main():
         model = nn.DataParallel(model)
         model = model.to(device)
 
+        # Pull layer parameters from ResNet class in deeplabv3.py
         backbone_params = (
             list(model.module.conv1.parameters()) +
             list(model.module.bn1.parameters()) +
@@ -61,8 +62,8 @@ def main():
             list(model.module.layer4.parameters())
         )
 
-        # create a list of dictionaries to store the backbone and other layer parameters
-        ###########################3 look into deep lab file and how it gets the backbone_params###################33
+        # Create a list of dictionaries to store the backbone and other layer parameters
+        # Optimize only the trainable parameters 'requires_grad'
         params_to_optimize = [
             {'params': filter(lambda p: p.requires_grad, backbone_params)},
             {'params': filter(lambda p: p.requires_grad, last_params)}
