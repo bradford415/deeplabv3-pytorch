@@ -246,7 +246,7 @@ class ResNet(nn.module):
         x = self.layer1(x)
 
 
-def resnet101(pretrained=False, **kwargs):
+def resnet101(pretrained=False, device='cpu',**kwargs):
     """ Contstruct a ResNet-101 model
     
     Args:
@@ -265,7 +265,7 @@ def resnet101(pretrained=False, **kwargs):
         overlap_dict = {k: v for k, v in pretrained_dict.items() if k in model_dict()}
         # might not be necessary, maybe can just pass overlay_dict to load_state_dict()
         model_dict.update(overlap_dict) 
-        model.load_state_dict(model_dict) # Load pre-trained weights
+        model.load_state_dict(torch.load(model_dict, map_location=device)) # Load pre-trained weights
 
     return model
 
