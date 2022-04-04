@@ -26,7 +26,7 @@ from torchvision import models
 # allows you to use all as a variable and ignores the 'all' keyword/function
 __all___ = ['resnet101'] 
 
-class ASPP(nn.module):
+class ASPP(nn.Module):
 
     def __init__(self, C, depth, num_classes, conv=nn.Conv2d, norm=nn.BatchNorm2d, momentum=0.0003, mult=1):
         """
@@ -155,7 +155,7 @@ class BottleNeck(nn.Module):
         return out
 
 
-class ResNet(nn.module):
+class ResNet(nn.Module):
     
     def __init__(self, block, layers, num_classes):
         super().init()

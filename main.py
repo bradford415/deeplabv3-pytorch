@@ -13,20 +13,33 @@ from scipy.io import loadmat
 
 import deeplabv3
 from utils import AverageMeter
+from pascal import VOCSegmentation
+from cityscapes import Cityscapes
+
 
 parser = argparse.ArgumentParser()
 # If '--train' is present in the command line, args.train will equal True
 parser.add_argument('--train', action='store_true', default=False) 
 parser.add_argument('--experiment', type=str, required=True,
                     help='name of experiment')
+parser.add_argument('--backbone', type=str, default='resnet101',
+                    help='resnet101')
+parser.add_argument('--dataset', type=str, default='pascal',
+                    help='pascal or cityscapes')
 parser.add_argument('--epochs', type=int, default=50,
                     help='number of training iterations')
 parser.add_argument('--batch_size', type=int, default=16, 
                     help='number of samples to train at a time per iteration')
-parser.add_argument('--base_lr', type=int, default=16, 
+parser.add_argument('--base_lr', type=float, default=16, 
                     help='base learning rate')
 parser.add_argument('--last_mult', type=float, default=1.0,
                     help='learning rate multiplier for last layers')
+parser.add_argument('--scratch', action='store_true', default=False,
+                    help='train from scratch, do not use pre-trained weights')
+# pascal training => 513x513, testing => 513x513
+# cityscapes training => 769x769, testing => 1025x2049
+parser.add_argument('--crop_size', type=int, default=513, 
+                    help='image crop size') # default value for pascal VOC dataset
 args = parser.parse_args()
 
 def main():
@@ -50,7 +63,10 @@ def main():
     model_fname = 'data/deeplabv3_{0}_{1}_{2}_epoch%d.pth'.format(
         args.backbone,args.dataset, args.experiment)
 
-    if args.dataset == 'cityscapes':
+    if args.dataset == 'pascal':
+      dataset = VOCSegmentation('data/VOCdevkit',
+                               train=args.train, crop_size=args.crop_size)
+    elif args.dataset == 'cityscapes':
       dataset = Cityscapes('data/cityscapes',
                            train=args.train, crop_size=args.crop_size)
     else:
@@ -67,7 +83,7 @@ def main():
         pretrained=(not args.scratch),
         device=device,
         num_classes=len(dataset.CLASSES),
-        num_groups=args.groups,
+        #num_groups=args.groups,
         weight_std=args.weight_std,
         beta=args.beta)
     else:
