@@ -1,4 +1,4 @@
 __pycache__/
 .vscode
-data/
-!*/pascal_seg.colormap.mat
+data/*
+!data/pascal_seg.colormap.mat
