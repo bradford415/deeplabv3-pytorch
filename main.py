@@ -11,11 +11,13 @@ import pdb # Python debugger
 import numpy as np
 from scipy.io import loadmat
 from PIL import Image
+from pathlib import Path
 
 import deeplabv3
 from utils import AverageMeter, inter_and_union
 from pascal import VOCSegmentation
 from cityscapes import Cityscapes
+
 
 
 parser = argparse.ArgumentParser()
@@ -52,12 +54,11 @@ def main():
     torch.backends.cudnn.benchmark = True 
     use_cuda = torch.cuda.is_available()
     device = torch.device('cuda' if use_cuda else 'cpu')
-    train_kwargs = {'batch_size': args.batch_size}
-    test_kwargs = {'batch_size': args.batch_size} # same for validation set
+    train_kwargs = {'batch_size': args.batch_size, 'shuffle': True}
+    test_kwargs = {'batch_size': args.batch_size, 'shuffle': False } # val and test
     if use_cuda:
         cuda_kwargs = {'num_workers': 2,
-                       'pin_memory': True,
-                       'shuffle': True}
+                       'pin_memory': True}
         train_kwargs.update(cuda_kwargs)
         test_kwargs.update(cuda_kwargs)
     
@@ -188,25 +189,43 @@ def main():
       cmap = loadmat('data/pascal_seg_colormap.mat')['colormap']
       cmap = (cmap * 255).astype(np.uint8).flatten().tolist()
 
+      dataset_loader = torch.utils.data.DataLoader(dataset, **test_kwargs)
+
       inter_meter = AverageMeter() # metrics for intersection
       union_meter = AverageMeter() # metrics for union
       with torch.inference_mode(): # newer torch.no_grad()
+        # Running count of the number of images inferred so far.
+        # Used to index into the masks (ground truths) of the dataset.
+        mask_index = 0 
         for index, (data, target) in enumerate(dataset_loader):
           data, target = data.to(device), target.to(device)
-          outputs = model(data)# model(data.unsqueeze(0))
-          loss = criterion(outputs, target)
+          # model(data.unsqueeze(0)) needs to be added if you loop through 
+          # dataset instead of dataset_loader, this is to add the batch dimension
+          # [B, C, H, W]
+          outputs = model(data) # model(data).unsqueeze(0) 
           _, pred = torch.max(outputs, 1)
-          pred = pred.data.numpy().squeeze().astype(np.uint8)
-          mask = target.numpy().astype(np.uint8)
-          image_name = dataset.masks[index].split('/')[-1]
-          mask_pred = Image.fromarray(pred)
-          mask_pred.putpalette(cmap)
-          mask_pred.svae(os.path.join('data/val', image_name))
-          print('eval: {0}/{1}'.format(index + 1, len(dataset)))
+          pred = pred.cpu().data.numpy().squeeze().astype(np.uint8)
+          mask = target.cpu().numpy().astype(np.uint8) # move data back to cpu to use numpy
+          # Need to interpret 1 image at a time in order to work with some PIL functions 
+          for mask_index, (image_pred, image_mask) in enumerate(zip(pred, mask), mask_index):
+            image_name = dataset.masks[mask_index].split('/')[-1]
+            mask_pred = Image.fromarray(image_pred)
+            mask_pred.putpalette(cmap)
+            Path('data/val').mkdir(parents=True, exist_ok=True)
+            mask_pred.save(os.path.join('data/val', image_name))
+            print('eval: {0}/{1}'.format(mask_index + 1, len(dataset)))
 
-          inter, union = inter_and_union(pred, mask, len(dataset.CLASSES))
-          inter_meter.update(inter)
-          union_meter.update(union)
+            inter, union = inter_and_union(image_pred, image_mask, len(dataset.CLASSES))
+            # Keep running sum of intersection and union values of image
+            # Inter and union are based on the prediction and groud truth mask
+            inter_meter.update(inter)
+            union_meter.update(union)
+            # If on the last iteration of the loop, increment mask_index.
+            # This is necessary bc when the for loop restarts for the new batch
+            # it will not increment and we want to keep track of every image
+            if mask_index % args.batch_size == args.batch_size - 1:
+              mask_index += 1
+            
 
         iou = inter_meter.sum / (union_meter.sum + 1e-10)
         for i, val in enumerate(iou):
