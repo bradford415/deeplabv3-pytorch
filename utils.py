@@ -36,7 +36,7 @@ class AverageMeter(object):
         self.val = val
         self.sum += val * n
         self.count += n
-        self.avg = self.sum / self.cnt
+        self.avg = self.sum / self.count
         self.ema = self.ema * 0.99 + self.val * 0.01
 
 

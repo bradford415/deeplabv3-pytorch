@@ -34,7 +34,7 @@ class ASPP(nn.Module):
             C: number of in_channels
             depth: number of out_channels
         """
-        super().init()
+        super().__init__()
         self._C = C
         self._depth = depth
         self._num_classes=num_classes
@@ -42,16 +42,16 @@ class ASPP(nn.Module):
         # when atrous rates are large enough, close to the size of the feature map.
         # This is explained in the deeplabv3 paper section 3.3. This is  performed 
         # in the x5 step
-        self.global_pooling = nn.AdaptiveAvgPooling2d(1) # Global pooling, output size 1
+        self.global_pooling = nn.AdaptiveAvgPool2d(1) # Global pooling, output size 1
         self.relu = nn.ReLU(inplace=True)
         # Defining convolutions with atrous rates [6, 12, 18]
         self.aspp1 = conv(C,depth, kernel_size=1, stride=1, bias=False)
-        self.aspp2 = conv(C, depth, kernel_size=3, stride=1,
-                          dilation=int(6*mult), padding=int(6*mult), bias=False)
+        self.aspp2 = conv(C, depth, kernel_size=3, stride=1, # padding prevents downsampling
+                          dilation=int(6*mult), padding=int(6*mult), bias=False) 
         self.aspp3 = conv(C, depth, kernel_size=3, stride=1,
                           dilation=int(12*mult), padding=int(12*mult), bias=False)
         self.aspp4 = conv(C, depth, kernel_size=3, stride=1,
-                          dilation=int(18*mult), padding=int(12*mult), bias=False)
+                          dilation=int(18*mult), padding=int(18*mult), bias=False)
         self.aspp5 = conv(C, depth, kernel_size=1, stride=1, bias=False)
         self.aspp1_bn = norm(depth, momentum)
         self.aspp2_bn = norm(depth, momentum)
@@ -91,7 +91,7 @@ class ASPP(nn.Module):
         # them like normal Conv2d with multiple output channels.
         # The feature maps are of size [batch_size, num_channels, height, width]
         # so dim=1 will append the feature maps to the num_channels dimension
-        x = torch.cat((x1, x2, x3, x4 ,x5), dim=1) 
+        x = torch.cat((x1, x2, x3, x4, x5), dim=1) 
         # Fuse concatenated feature maps using 1x1 convolutions
         x = self.conv2(x)
         x = self.bn2(x)
@@ -158,11 +158,11 @@ class BottleNeck(nn.Module):
 class ResNet(nn.Module):
     
     def __init__(self, block, layers, num_classes):
-        super().init()
+        super().__init__()
         self.inplanes = 64 # PyTorch refers to planes as the number of channels for some reason
         self.dilation = 1
         self.conv = nn.Conv2d # Mostly use for 1x1 convolutions
-        self.norm_layer = nn.BatchNorm2d
+        self.norm = nn.BatchNorm2d
         '''
         if replace_stride_with_dilation is None:
             # Each element in the list indicates if we should replace
@@ -204,7 +204,6 @@ class ResNet(nn.Module):
                         type of resnetxxx (ex. 'resnet101' uses [3, 4, 23, 3]). these values
                         can be found in Table 1 in the resnet paper.
         """
-        
         downsample = None
         # previous_dilation = self.dilation 
         # If you are downsampling the feature map. 
@@ -215,7 +214,7 @@ class ResNet(nn.Module):
             downsample = nn.Sequential(
                 self.conv(self.inplanes, planes*block.expansion, # Cannot dilate a 1x1 convolution
                           kernel_size=1, stride=stride, bias=False),
-                self.norm_layer(planes * block.expansion)
+                self.norm(planes * block.expansion)
             )   
         
         """From the original ResNet paper, after the block of 64 kernels, starting at 128, 
@@ -229,30 +228,38 @@ class ResNet(nn.Module):
         the second 3x3 conv (because BasicBlock contains two 3x3 Convs)
         """
         layers = []
-        layers.append(block(self.inplanes, planes, stride, downsample, self.conv, self.norm_layer))
+        layers.append(block(self.inplanes, planes, stride, downsample, conv=self.conv, norm=self.norm))
+        self.inplanes = planes * block.expansion
         for i in range(1, blocks):
             layers.append(block(self.inplanes, planes, dilation=dilation, 
                           conv=self.conv, norm=self.norm))
-        return nn.sequential(*layers) 
+        return nn.Sequential(*layers) 
         # * operator expands the list into positional arguments to create a model in 1 line
     
-    #############################Finish impelementing _make_layer, forward function and bottleneck class. Do BasicBlock class if have time 
     def forward(self, x):
+        size = (x.shape[2], x.shape[3]) # get original image height
         x = self.conv1(x)
         x = self.bn1(x)
         x = self.relu(x)
+        x = self.maxpool(x)
 
-        x = F.relu(self.bn1(self.conv1(x)))
         x = self.layer1(x)
+        x = self.layer2(x)
+        x = self.layer3(x)
+        x = self.layer4(x)
 
+        x = self.aspp(x)
+        x = nn.Upsample(size, mode='bilinear', align_corners=True)(x)
 
-def resnet101(pretrained=False, device='cpu',**kwargs):
+        return x
+
+def create_resnet101(pretrained=False, device='cpu', **kwargs):
     """ Contstruct a ResNet-101 model
     
     Args:
         pretrained (bool): If True, load pre-trained ImageNet weights
     """
-    model = ResNet(BottleNeck, [3, 4, 23, 3],**kwargs)
+    model = ResNet(BottleNeck, [3, 4, 23, 3], **kwargs)
     if pretrained:
         # A model's state dictionary maps each layer to its parameter tensor
         # Only layers that have learnable parameters have entries in the dictionary
@@ -262,10 +269,11 @@ def resnet101(pretrained=False, device='cpu',**kwargs):
         pretrained_dict = resnet101.state_dict()
         # Filter out unncessary keys - only return parameters from the pre-trained
         # ResNet that matches our ResNet 
-        overlap_dict = {k: v for k, v in pretrained_dict.items() if k in model_dict()}
+        overlap_dict = {k: v for k, v in pretrained_dict.items() if k in model_dict}
         # might not be necessary, maybe can just pass overlay_dict to load_state_dict()
         model_dict.update(overlap_dict) 
-        model.load_state_dict(torch.load(model_dict, map_location=device)) # Load pre-trained weights
+        model.load_state_dict(model_dict) # Load pre-trained weights
+        # torch.load did not work and im not sure of another way to map location 
 
     return model
 

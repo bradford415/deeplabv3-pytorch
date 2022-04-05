@@ -10,9 +10,10 @@ import torch.optim as optim
 import pdb # Python debugger
 import numpy as np
 from scipy.io import loadmat
+from PIL import Image
 
 import deeplabv3
-from utils import AverageMeter
+from utils import AverageMeter, inter_and_union
 from pascal import VOCSegmentation
 from cityscapes import Cityscapes
 
@@ -40,6 +41,8 @@ parser.add_argument('--scratch', action='store_true', default=False,
 # cityscapes training => 769x769, testing => 1025x2049
 parser.add_argument('--crop_size', type=int, default=513, 
                     help='image crop size') # default value for pascal VOC dataset
+parser.add_argument('--resume', type=str, default=None,
+                    help='path to checkpoint to resume from')
 args = parser.parse_args()
 
 def main():
@@ -79,13 +82,10 @@ def main():
     # I am not sure the advantage over this rather than just calling the function itself
     # w/o getattr()
     if args.backbone == 'resnet101':
-        model = getattr(deeplabv3, 'resnet101')(
+        model = getattr(deeplabv3, 'create_resnet101')(
         pretrained=(not args.scratch),
         device=device,
-        num_classes=len(dataset.CLASSES),
-        #num_groups=args.groups,
-        weight_std=args.weight_std,
-        beta=args.beta)
+        num_classes=len(dataset.CLASSES))
     else:
         raise ValueError('Unknown backbone: {}'.format(args.backbone))
       
@@ -122,7 +122,7 @@ def main():
       ]
       optimizer = optim.SGD(params_to_optimize, lr=args.base_lr, momentum=0.9, weight_decay=0.0001)
       losses = AverageMeter()
-      dataset_loader = torch.utils.datra.DataLoader(dataset, **train_kwargs)
+      dataset_loader = torch.utils.data.DataLoader(dataset, **train_kwargs)
 
       max_iterations = args.epochs * len(dataset_loader)
 
@@ -153,7 +153,7 @@ def main():
           optimizer.zero_grad()
           outputs = model(data)
           loss = criterion(outputs, target)
-          if np.isnan(loss.item()) or np.isinf(loss.item()):#####understand this#####
+          if np.isnan(loss.item()) or np.isinf(loss.item()):##########
             pdb.set_trace()
           losses.update(loss.item(), args.batch_size) # Keep track of running loss
 
@@ -164,22 +164,26 @@ def main():
                 'iter: {1}/{2}\t'
                 'lr: {3:.6f}\t'
                 'loss: {loss.val:.4f} ({loss.ema:.4f})'.format(
-                epoch + 1, i + 1, len(dataset_loader), lr, loss=losses))
+                epoch + 1, index + 1, len(dataset_loader), lr, loss=losses))
 
         # Save a checkpoint every 10 epochs
         if epoch % 10 == 9:
           torch.save({
             'epoch': epoch + 1,
-            'state_dict': model.state_dict(),
+            'model': model.state_dict(),
             'optimizer': optimizer.state_dict(),
             }, model_fname % (epoch + 1))
         
-    else: # Evaluation#################3 create eval loop, loko at model_fname, make average meter, look into datasets files
+    else: # Inference
       model = model.eval()  # Required to set BN layers to eval mode
       checkpoint = torch.load(model_fname % args.epochs, map_location=device)
-      #state_dict = {k[7:]: v for k, v in checkpoint['state_dict'].items if 'tracked' not in k}
-      # Do not need to load optimizer dict because it is not used for inference
-      state_dict = checkpoint['model']
+      # Because the model was trained with nn.DataParallel each layer is wrapped
+      # in a .module(). WE are not inferencing with DataParallel so we have 
+      # to remove the 'module.' in front of each layer or else it will not
+      # be able to find those layers. Start the key name at element 7
+      # will remove this 'module.' This is what the following line does.
+      state_dict = {k[7:]: v for k, v in checkpoint['state_dict'].items() if 'tracked' not in k}
+      # Do not need to load optimizer state_dict because it is not used for inference
       model.load_state_dict(state_dict)
       cmap = loadmat('data/pascal_seg_colormap.mat')['colormap']
       cmap = (cmap * 255).astype(np.uint8).flatten().tolist()
