@@ -1,4 +1,6 @@
 __pycache__/
 .vscode
+
+# Ignore data folder except certain files (!)
 data/*
-!data/pascal_seg.colormap.mat
+!data/pascal_seg_colormap.mat
