@@ -3,4 +3,6 @@ Implementation of DeepLabv3 semantic segmentation model in PyTorch for ECE-8550 
 
 After understanding and implementing DeepLabv3, the model was trained and inferenced on the PASCAL VOC 2012 dataset augmented with SBD like in the DeepLabv3 paper. To further test and improve the paper, I trained and tested the model on [RELLIS-3D off-road terrain dataset](https://unmannedlab.github.io/research/RELLIS-3D).
 
-This project includes most aspects of the DeepLabv3 paper such as a ResNet backbone modified for DeepLab and atrous spatial pyramid pooling (ASPP).  Unfortunately, I was not able to implement the multi-grid due to confusion and time constraints for my project. The project still achieves an mIoU score of __73.90%__ on the augmented pascal voc 2012 dataset.
+This project includes most aspects of the DeepLabv3 paper such as a ResNet backbone modified for DeepLab and atrous spatial pyramid pooling (ASPP).  Unfortunately, I was not able to implement the multi-grid due to confusion and time constraints for my project. The model still achieves an mIoU score of __73.90%__ on the augmented pascal voc 2012 dataset.
+
+## Setup
