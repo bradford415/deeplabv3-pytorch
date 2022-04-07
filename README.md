@@ -33,5 +33,5 @@ Once you have a trained model, to test the model run the ```inference.sh``` scri
 ```
 bash inference.sh
 ```
-During inference, the epoch, iteration, and loss will be printed. When inference is finished, the segmented images will be saved, the IoU of each class and the final mIoU for the test set are printed out and saved to a text file. This is all saved in the ```data/<experiment>``` directory.
+During inference, the epoch, iteration, and loss will be printed. When inference is finished, the segmented images will be saved, the IoU of each class and the final mIoU for the test set are printed out and saved to a text file. This is all stored in the ```data/<experiment>``` directory.
 ## Preparing augmented pascal voc 2012 dataset
