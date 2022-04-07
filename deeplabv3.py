@@ -133,7 +133,7 @@ class BottleNeck(nn.Module):
         """
         identity = x
 
-        out = self.conv1(x)
+        out = self.conv1(x) # uses 'out' variable bc you do not want to modify x
         out = self.bn1(out)
         out = self.relu(out)
 
@@ -144,8 +144,8 @@ class BottleNeck(nn.Module):
         out = self.conv3(out)
         out = self.bn3(out)
 
-        # If downsampling, also downsample the original input
-        # I think this is so you are adding matrices of the same size  
+        # If downsampling also downsample the original input
+        # This is so you are adding matrices of the same size  
         if self.downsample is not None:
             identity = self.downsample(x)
 

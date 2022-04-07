@@ -1,5 +1,9 @@
 """Main file to run this project
 
+
+TODO:
+  - Create a directory by experiment name
+    By date will not work because it will be too hard to load checkpoint
 """
 import argparse
 import os
@@ -144,6 +148,10 @@ def main():
         for index, (data, target) in enumerate(dataset_loader):
           current_iteration = epoch * len(dataset_loader) + index
           # Learning rate updated based on Deeplabv3 paper section 4.1
+          # Uses a 'poly' learning rate policy
+          # max_iterations is defined as (num_epochs*num_iterations_per_epoch)
+          # num_iterations_per_epoch I think is ceil(num_training_samples/batch_size)
+          # same as len(dataset_loader)
           lr = args.base_lr * (1 - float(current_iteration) / max_iterations) ** 0.9
           optimizer.param_groups[0]['lr'] = lr # Update lr for backbone
           optimizer.param_groups[1]['lr'] = lr * args.last_mult # Update lr for ASPP, I think thats what [1] means
@@ -207,6 +215,9 @@ def main():
           pred = pred.cpu().data.numpy().squeeze().astype(np.uint8)
           mask = target.cpu().numpy().astype(np.uint8) # move data back to cpu to use numpy
           # Need to interpret 1 image at a time in order to work with some PIL functions 
+          # Alternitavely, you could loop through len(dataset) and process 1 sample at a time
+          # not using the dataloader at all and it would get rid of the following loop. 
+          # However, then you would only be using a batch size of 1 but probably doesn't matter.
           for mask_index, (image_pred, image_mask) in enumerate(zip(pred, mask), mask_index):
             image_name = dataset.masks[mask_index].split('/')[-1]
             mask_pred = Image.fromarray(image_pred)

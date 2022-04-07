@@ -1,3 +1,17 @@
+"""Dataset file for Pascal VOC. Used to preprocess the data and
+prepare it for the data loader
+
+Notes:
+    -The cream color border outline around objects is used as a void label
+     and to mask difficult objects. More information here in scetion 2.6:
+     http://host.robots.ox.ac.uk/pascal/VOC/voc2012/htmldoc/index.html
+    -Raw label images are used as ground truth. The network predicts a label
+     for each pixel (single integer) and this and the ground truth are
+     passed to the loss function. If we were to use the colormap image as ground
+     truth, we would need to convert the ground truth rgb values to a single 
+     ground truth integer using a colormap, I think. The colormap index
+     would be the ground truth label.
+"""
 from __future__ import print_function
 
 import torch.utils.data as data
