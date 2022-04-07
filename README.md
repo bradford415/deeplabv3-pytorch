@@ -26,9 +26,12 @@ or
 ```bash
 python main.py --train --experiment bn_lr7e-3 --backbone resnet101 --dataset pascal --epochs 50 --batch_size 4 --base_lr 0.007 --crop_size 513
 ```
+A directory is created named after the hyperparameters specificed and the trained model and checkpoints are stored here.
 
 ### Testing the model
-Once you have a trained model, to test the model run the ```inference.sh``` script or remove the ```--train``` argument from the command line argument
+Once you have a trained model, to test the model run the ```inference.sh``` script or remove the ```--train``` argument from the command line argument. The trained model that is loaded is named by the hyperparameters used to train it.
 ```
 bash inference.sh
 ```
+
+## Preparing augmented pascal voc 2012 dataset
