@@ -18,7 +18,7 @@ Create a virtual environment with the required dependencies.
 conda create -n deeplabv3-pytorch python=3.7 pytorch torchvision numpy scipy pillow
 ```
 ### Traning the model
-After preparing a dataset, to train the model run the ```train.sh``` script or run ```main.py``` and specify the command line arguments. A breif explanation of the command line arguments are at the top of ```main.py```. Instructions on preparing the augemented pascal dataset are written below.
+After preparing a dataset, to train the model run the ```train.sh``` script or run ```main.py``` and specify the command line arguments. A brief explanation of the command line arguments are at the top of ```main.py```. Instructions on preparing the augemented pascal dataset are written below.
 ```bash
 bash train.sh
 ```
@@ -26,12 +26,12 @@ or
 ```bash
 python main.py --train --experiment bn_lr7e-3 --backbone resnet101 --dataset pascal --epochs 50 --batch_size 4 --base_lr 0.007 --crop_size 513
 ```
-A directory is created named after the hyperparameters specificed and the trained model and checkpoints are stored here.
+A directory is created named after the command line arguments: backbone, experiment, dataset, and epochs. The trained model and checkpoints are stored here.
 
 ### Testing the model
 Once you have a trained model, to test the model run the ```inference.sh``` script or remove the ```--train``` argument from the command line argument. The trained model that is loaded is named by the hyperparameters used to train it.
 ```
 bash inference.sh
 ```
-
+During inference, the epoch, iteration, and loss will be printed. When inference is finished, the segmented images will be saved, the IoU of each class and the final mIoU for the test set are printed out and saved to a text file. This is all saved in the ```data/<experiment>``` directory.
 ## Preparing augmented pascal voc 2012 dataset
