@@ -13,9 +13,10 @@ git clone https://github.com/bradford415/deeplabv3-pytorch.git
 ```
 
 ### Anaconda environment
-Create a virtual environment with the required dependencies and activate it.
+Create a virtual environment with the required dependencies and activate it. Note: there is a bug where conda installs the wrong torchvision version so it needs to be installed after creating the environment using pip.
 ```bash
-conda create -n deeplabv3-pytorch python=3.7 pytorch torchvision numpy scipy pillow
+conda create -n deeplabv3-pytorch python=3.7 pytorch numpy scipy pillow
+pip install torchvision
 source activate deeplabv3-pytorch
 ```
 ### Traning the model
