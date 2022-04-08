@@ -18,7 +18,7 @@ Create a virtual environment with the required dependencies.
 conda create -n deeplabv3-pytorch python=3.7 pytorch torchvision numpy scipy pillow
 ```
 ### Traning the model
-After preparing a dataset, to train the model run the ```train.sh``` script or run ```main.py``` and specify the command line arguments. A brief explanation of the command line arguments are at the top of ```main.py```. Instructions on preparing the augemented pascal dataset are written below.
+After preparing a dataset, to train the model run the ```train.sh``` script or run ```main.py``` and specify the command line arguments. A brief explanation of the command line arguments are at the top of ```main.py```. Instructions on preparing the augemented pascal dataset are written after the setup.
 ```bash
 bash train.sh
 ```
