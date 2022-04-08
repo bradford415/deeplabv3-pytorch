@@ -35,26 +35,25 @@ class VOCSegmentation(data.Dataset):
                  download=False,
                  crop_size=None):
         self.root = root
-        _voc_root = os.path.join(self.root, 'VOC2012')
-        _list_dir = os.path.join(_voc_root, 'list')
+        _voc_root = os.path.join(self.root, 'VOCdevkit','VOC2012')
+        #_list_dir = os.path.join(_voc_root, 'list')
         self.transform = transform
         self.target_transform = target_transform
         self.train = train
         self.crop_size = crop_size
-
         if download:
             self.download()
 
         if self.train:
-            _list_f = os.path.join(_list_dir, 'train_aug.txt')
+            _list_f = os.path.join(self.root, 'train_aug.txt')
         else:
-            _list_f = os.path.join(_list_dir, 'val.txt')
+            _list_f = os.path.join(self.root, 'val.txt')
         self.images = []
         self.masks = []
         with open(_list_f, 'r') as lines:
             for line in lines:
                 _image = _voc_root + line.split()[0]
-                _mask = _voc_root + line.split()[1]
+                _mask = self.root + line.split()[1]
                 assert os.path.isfile(_image)
                 assert os.path.isfile(_mask)
                 self.images.append(_image)

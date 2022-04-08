@@ -3,4 +3,6 @@ __pycache__/
 
 # Ignore data folder except certain files (!)
 data/*
-!data/pascal_seg_colormap.mat
+!data/pascal/pascal_seg_colormap.mat
+!data/pascal/train_aug.txt
+!data/pascal/val.txt

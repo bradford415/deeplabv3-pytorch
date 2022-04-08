@@ -5,6 +5,6 @@ python main.py --train \
                --backbone resnet101 \
                --dataset pascal \
                --epochs 50 \
-               --batch_size 4 \
+               --batch_size 16 \
                --base_lr 0.007 \
                --crop_size 513 

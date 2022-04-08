@@ -66,13 +66,16 @@ def main():
         train_kwargs.update(cuda_kwargs)
         test_kwargs.update(cuda_kwargs)
     
-    # File name to save checkpoints
-    # Model checkpoints are saved w/ this naming convention during training 
+    # File and dir name to save checkpoints
+    # Model checkpoints are saved w/ this naming convention during training
+    model_dirname = 'data/deeplabv3_{0}_{1}_{2}_epoch'.format(
+        args.backbone,args.dataset, args.experiment)
     model_fname = 'data/deeplabv3_{0}_{1}_{2}_epoch%d.pth'.format(
         args.backbone,args.dataset, args.experiment)
+    Path(os.path.join('data',model_dirname)).mkdir(parents=True, exist_ok=True)
 
     if args.dataset == 'pascal':
-      dataset = VOCSegmentation('data/VOCdevkit',
+      dataset = VOCSegmentation('data/pascal',
                                train=args.train, crop_size=args.crop_size)
     elif args.dataset == 'cityscapes':
       dataset = Cityscapes('data/cityscapes',
@@ -97,8 +100,8 @@ def main():
     model = model.to(device)
 
     """Notes:
-    - ignore_index ignores the 255 value bc indices go from 0-254, I think.
-      Or it is used for the background class which you will ignore
+    - ignore_index ignores the 255 value bc the augmented dataset labels uses 255 
+      (white) as the border around the objects and we want to ignore for training
     - DataParallel splits input across devices. During forward pass the model is 
       replicated on each device and each device handles a portion of the input.
     - .cuda(), the same as, .to(device) used to put models/tensors on gpu 
@@ -107,7 +110,9 @@ def main():
     if args.train:
       model.train()
       criterion = nn.CrossEntropyLoss(ignore_index=255) 
-      model = nn.DataParallel(model)
+      # only using gpu:0 (NVIDIA TITAN RTX) bc it is much more powerful than
+      # my gpu:1 (NVIDIA GeForce RTX 2060) and that causes gpu:1 to be a bottle neck
+      model = nn.DataParallel(model, device_ids=[0])
 
       # Pull layer parameters from ResNet class in deeplabv3.py
       backbone_params = (
@@ -222,10 +227,9 @@ def main():
             image_name = dataset.masks[mask_index].split('/')[-1]
             mask_pred = Image.fromarray(image_pred)
             mask_pred.putpalette(cmap)
-            Path('data/val').mkdir(parents=True, exist_ok=True)
+            Path(os.path.join('data',model_dirname,'inference')).mkdir(parents=True, exist_ok=True)
             mask_pred.save(os.path.join('data/val', image_name))
             print('eval: {0}/{1}'.format(mask_index + 1, len(dataset)))
-
             inter, union = inter_and_union(image_pred, image_mask, len(dataset.CLASSES))
             # Keep running sum of intersection and union values of image
             # Inter and union are based on the prediction and groud truth mask
@@ -239,9 +243,13 @@ def main():
             
 
         iou = inter_meter.sum / (union_meter.sum + 1e-10)
-        for i, val in enumerate(iou):
-          print('IoU {0}: {1:.2f}'.format(dataset.CLASSES[i], val * 100))
-        print('Mean IoU: {0:.2f}'.format(iou.mean() * 100))
+        # Print and save IoU per class and final mIoU score
+        with open('metrics.txt', 'w') as file:
+          for i, val in enumerate(iou):
+            print('IoU {0}: {1:.2f}'.format(dataset.CLASSES[i], val * 100))
+            file.write('IoU {0}: {1:.2f}'.format(dataset.CLASSES[i], val * 100))
+          print('Mean IoU: {0:.2f}'.format(iou.mean() * 100))
+          file.write('Mean IoU: {0:.2f}'.format(iou.mean() * 100))
 
 if __name__ == '__main__':
     main()
