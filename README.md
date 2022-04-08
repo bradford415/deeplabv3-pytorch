@@ -36,3 +36,11 @@ bash inference.sh
 ```
 During inference, the epoch, iteration, and loss will be printed. When inference is finished, the segmented images will be saved, the IoU of each class and the final mIoU for the test set are printed out and saved to a text file. This is all stored in the ```data/<experiment>``` directory.
 ## Preparing augmented pascal voc 2012 dataset
+First, manually download the augmented data set [Here](https://www.dropbox.com/s/oeu149j8qtbs1x0/SegmentationClassAug.zip?dl=0) provided by [DrSleep](https://github.com/DrSleep/tensorflow-deeplab-resnet) and move the .zip folder into ```data/pascal/```. It contains ```10582``` images for training and ```1449``` images for validation. Next, download the PASCAL jpg images, color map and finish preparation by following the commands below.
+```bash
+cd data/pascal
+unzip SegmentationClassAug.zip
+wget http://host.robots.ox.ac.uk/pascal/VOC/voc2012/VOCtrainval_11-May-2012.tar
+tar -xf VOCtrainval_11-May-2012.tar
+```
+
