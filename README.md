@@ -26,10 +26,10 @@ or
 ```bash
 python main.py --train --experiment bn_lr7e-3 --backbone resnet101 --dataset pascal --epochs 50 --batch_size 4 --base_lr 0.007 --crop_size 513
 ```
-A directory is created named after the command line arguments: backbone, experiment, dataset, and epochs. The trained model and checkpoints are stored here.
+A directory is created named after the command line arguments: backbone, experiment, and dataset. The trained model and checkpoints are stored here. Checkpoints are saved at every 10 epoch intervals.
 
 ### Testing the model
-Once you have a trained model, to test the model run the ```inference.sh``` script or remove the ```--train``` argument from the command line argument. The trained model that is loaded is named by the hyperparameters used to train it.
+Once you have a trained model, to test the model run the ```inference.sh``` script or remove the ```--train``` argument from the command line argument. The trained model that is loaded is named by the backbone, experiment. dataset, and epochs.
 ```
 bash inference.sh
 ```
