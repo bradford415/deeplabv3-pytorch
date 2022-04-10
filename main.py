@@ -193,7 +193,6 @@ def main():
         
     else: # Inference
       model = model.eval()  # Required to set BN layers to eval mode
-      print(model_fpath%args.epochs)
       checkpoint = torch.load(model_fpath % args.epochs, map_location=device)
       # Because the model was trained with nn.DataParallel each layer is wrapped
       # in a .module(). WE are not inferencing with DataParallel so we have 
@@ -251,10 +250,10 @@ def main():
 
         iou = inter_meter.sum / (union_meter.sum + 1e-10)
         # Print and save IoU per class and final mIoU score
-        with open('metrics.txt', 'w') as file:
+        with open(os.path.join(model_path, 'metrics.txt'), 'w') as file:
           for i, val in enumerate(iou):
             print('IoU {0}: {1:.2f}'.format(dataset.CLASSES[i], val * 100))
-            file.write('IoU {0}: {1:.2f}'.format(dataset.CLASSES[i], val * 100))
+            file.write('IoU {0}: {1:.2f}\n'.format(dataset.CLASSES[i], val * 100))
           print('Mean IoU: {0:.2f}'.format(iou.mean() * 100))
           file.write('Mean IoU: {0:.2f}'.format(iou.mean() * 100))
 
