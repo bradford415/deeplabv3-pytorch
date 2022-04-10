@@ -6,5 +6,6 @@ data/pascal/*
 !data/pascal/pascal_seg_colormap.mat
 !data/pascal/train_aug.txt
 !data/pascal/val.txt
+!data/pascal/testfile.txt
 
 data/*
