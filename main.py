@@ -68,11 +68,13 @@ def main():
     
     # File and dir name to save checkpoints
     # Model checkpoints are saved w/ this naming convention during training
-    model_dirname = 'data/deeplabv3_{0}_{1}_{2}_epoch'.format(
+    model_dirname = 'deeplabv3_{0}_{1}_{2}'.format(
         args.backbone,args.dataset, args.experiment)
-    model_fname = 'data/deeplabv3_{0}_{1}_{2}_epoch%d.pth'.format(
+    model_fname = 'deeplabv3_{0}_{1}_{2}_epoch%d.pth'.format(
         args.backbone,args.dataset, args.experiment)
-    Path(os.path.join('data',model_dirname)).mkdir(parents=True, exist_ok=True)
+    model_path = os.path.join('data', model_dirname)
+    model_fpath = os.path.join('data', model_dirname, model_fname)
+    Path(model_path).mkdir(parents=True, exist_ok=True)
 
     if args.dataset == 'pascal':
       dataset = VOCSegmentation('data/pascal',
@@ -136,6 +138,7 @@ def main():
 
       max_iterations = args.epochs * len(dataset_loader)
 
+      # Resume not tested yet
       if args.resume:
         if os.path.isfile(args.resume):
           print('=> loading checkpoint {0}'.format(args.resume))
@@ -186,20 +189,24 @@ def main():
             'epoch': epoch + 1,
             'model': model.state_dict(),
             'optimizer': optimizer.state_dict(),
-            }, model_fname % (epoch + 1))
+            }, model_fpath % (epoch + 1))
         
     else: # Inference
       model = model.eval()  # Required to set BN layers to eval mode
-      checkpoint = torch.load(model_fname % args.epochs, map_location=device)
+      print(model_fpath%args.epochs)
+      checkpoint = torch.load(model_fpath % args.epochs, map_location=device)
       # Because the model was trained with nn.DataParallel each layer is wrapped
       # in a .module(). WE are not inferencing with DataParallel so we have 
       # to remove the 'module.' in front of each layer or else it will not
       # be able to find those layers. Start the key name at element 7
       # will remove this 'module.' This is what the following line does.
-      state_dict = {k[7:]: v for k, v in checkpoint['state_dict'].items() if 'tracked' not in k}
+      state_dict = {k[7:]: v for k, v in checkpoint['model'].items() if 'tracked' not in k}
       # Do not need to load optimizer state_dict because it is not used for inference
       model.load_state_dict(state_dict)
-      cmap = loadmat('data/pascal_seg_colormap.mat')['colormap']
+      if args.dataset == 'pascal':
+        cmap = loadmat('data/pascal/pascal_seg_colormap.mat')['colormap']
+      else:
+        raise ValueError('Unknown colormap for dataset: {}'.format(args.dataset))
       cmap = (cmap * 255).astype(np.uint8).flatten().tolist()
 
       dataset_loader = torch.utils.data.DataLoader(dataset, **test_kwargs)
@@ -228,7 +235,7 @@ def main():
             mask_pred = Image.fromarray(image_pred)
             mask_pred.putpalette(cmap)
             Path(os.path.join('data',model_dirname,'inference')).mkdir(parents=True, exist_ok=True)
-            mask_pred.save(os.path.join('data/val', image_name))
+            mask_pred.save(os.path.join('data', model_dirname, 'inference', image_name))
             print('eval: {0}/{1}'.format(mask_index + 1, len(dataset)))
             inter, union = inter_and_union(image_pred, image_mask, len(dataset.CLASSES))
             # Keep running sum of intersection and union values of image

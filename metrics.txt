@@ -1,0 +1,1 @@
+IoU background: 94.07IoU aeroplane: 86.35IoU bicycle: 42.52IoU bird: 89.22IoU boat: 70.26IoU bottle: 78.80IoU bus: 93.74IoU car: 89.51IoU cat: 93.28IoU chair: 44.71IoU cow: 86.97IoU diningtable: 57.97IoU dog: 87.37IoU horse: 88.23IoU motorbike: 85.43IoU person: 85.61IoU potted-plant: 61.32IoU sheep: 82.32IoU sofa: 46.86IoU train: 84.72IoU tv/monitor: 73.57Mean IoU: 77.28
