@@ -7,4 +7,7 @@ data/pascal/*
 !data/pascal/train_aug.txt
 !data/pascal/val.txt
 
+data/rellis/*
+
+
 data/deeplab*

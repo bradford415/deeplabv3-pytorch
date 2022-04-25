@@ -7,4 +7,4 @@ python main.py --train \
                --epochs 50 \
                --batch_size 16 \
                --base_lr 0.007 \
-               --crop_size 513 
+                

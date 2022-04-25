@@ -1,4 +1,4 @@
-import torch.utils.data as Dataset
+from torch.utils.data import Dataset
 import os
 import random
 import glob

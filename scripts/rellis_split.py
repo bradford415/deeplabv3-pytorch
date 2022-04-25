@@ -8,14 +8,12 @@ This script creates 5 directories:
     rellis-3d-split -> train -> rgb,
     rellis-3d-split -> train -> id, 
     rellis-3d-split -> test -> rgb,
-    rellis-3d-split -> test -> rgb,
+    rellis-3d-split -> test -> id,
     rellis-3d-split -> unlabled
 Each newly made directory is checked for duplicates (different file extensions)
 and 1 file of the duplicates is kept.
 """
-from email.mime import image
 import os
-from shlex import split
 import shutil
 import numpy as np
 from collections import Counter
@@ -27,8 +25,8 @@ percent_split = 0.3 # 30% test split data
 # Define root paths to dataset and the paths to the new direcotries
 ROOT_DIR = os.getcwd() # path to this script
 HOME = str(Path.home())
-RELLIS_PATH = os.path.join(HOME, 'datasets/Rellis-3D-rgb')
-NEW_DATA_ROOT = os.path.join(HOME, 'datasets/Rellis-3D-rgb-split') # dir that will be created
+RELLIS_PATH = os.path.join(HOME, 'datasets/Rellis-3D-camera')
+NEW_DATA_ROOT = os.path.join(HOME, 'datasets/Rellis-3D-camera-split') # dir that will be created
 RGB_TRAIN = os.path.join(NEW_DATA_ROOT, 'train/rgb')
 ID_TRAIN = os.path.join(NEW_DATA_ROOT,'train/id')
 RGB_TEST = os.path.join(NEW_DATA_ROOT,'test/rgb')
@@ -60,7 +58,7 @@ def split_train_test_files(image_names, label_names, test_ratio=percent_split):
     train_indices = shuffled_indices[test_set_size:]
     
     image_names = np.array(image_names) # making numpy array to return multiple indices
-    label_names = np.array(image_names) # regular python does not support this
+    label_names = np.array(label_names) # regular python does not support this
 
     return (image_names[train_indices], image_names[test_indices],
            label_names[train_indices], label_names[test_indices])
