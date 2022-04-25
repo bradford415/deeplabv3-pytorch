@@ -12,14 +12,12 @@ Notes:
      ground truth integer using a colormap, I think. The colormap index
      would be the ground truth label.
 """
-from __future__ import print_function
-
-import torch.utils.data as data
+import torch.utils.data as Dataset
 import os
 from PIL import Image
 from utils import preprocess
 
-class VOCSegmentation(data.Dataset):
+class VOCSegmentation(Dataset):
     CLASSES = [
         'background', 'aeroplane', 'bicycle', 'bird', 'boat', 'bottle', 'bus',
         'car', 'cat', 'chair', 'cow', 'diningtable', 'dog', 'horse',
@@ -69,6 +67,8 @@ class VOCSegmentation(data.Dataset):
                                    scale=(0.5, 2.0) if self.train else None,
                                    crop=(self.crop_size, self.crop_size))
 
+        # I'm not sure what this is used for because all the transformations are
+        # done in preprocess() function
         if self.transform is not None:
             _img = self.transform(_img)
 

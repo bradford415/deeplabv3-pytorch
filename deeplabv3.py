@@ -96,7 +96,8 @@ class ASPP(nn.Module):
         x = self.conv2(x)
         x = self.bn2(x)
         x = self.relu(x)
-        # General the final logits using 1x1 convolution
+        # General the final logits using 1x1 convolution creating
+        # the # of output channels = # of classes
         x = self.conv3(x)
         
         return x
@@ -156,6 +157,7 @@ class BottleNeck(nn.Module):
 
 
 class ResNet(nn.Module):
+    """ResNet model modified for deeplab"""
     
     def __init__(self, block, layers, num_classes):
         super().__init__()

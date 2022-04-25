@@ -63,6 +63,10 @@ def preprocess(image, mask, flip=False, scale=None, crop=None):
     random resizing from 0.5-2.0, horizontal flipping, random cropping, and 
     normalizing the values based on the mean and standard deviation of the 
     pretrained network dataset (ImageNet)
+
+    MAKE SURE YOU PERFORM THE SAME TRANSFORM, WITH THE SAME TRANSFORM VALUES, 
+    FOR THE IMAGE AND LABEL. It is shown here how to do this:
+    https://discuss.pytorch.org/t/torchvision-transfors-how-to-perform-identical-transform-on-both-image-and-target/10606/7
     
     The preprocessing protocol is defined by the original protocol of deeplab.
     The idea behind horizontal flipping is that an object should be equally

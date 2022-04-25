@@ -1,6 +1,4 @@
-from __future__ import print_function
-
-import torch.utils.data as data
+import torch.utils.data as Dataset
 import os
 import random
 import glob
@@ -23,7 +21,7 @@ _DATA_FORMAT_MAP = {
 }
 
 
-class Cityscapes(data.Dataset):
+class Cityscapes(Dataset):
   CLASSES = [
       'road', 'sidewalk', 'building', 'wall', 'fence', 'pole', 'traffic light',
       'traffic sign', 'vegetation', 'terrain', 'sky', 'person', 'rider', 'car',

@@ -1,9 +1,4 @@
 """Main file to run this project
-
-
-TODO:
-  - Create a directory by experiment name
-    By date will not work because it will be too hard to load checkpoint
 """
 import argparse
 import os
@@ -17,11 +12,12 @@ from scipy.io import loadmat
 from PIL import Image
 from pathlib import Path
 
+# Import local files
 import deeplabv3
 from utils import AverageMeter, inter_and_union
-from pascal import VOCSegmentation
-from cityscapes import Cityscapes
-
+from datasets.pascal import VOCSegmentation
+from datasets.cityscapes import Cityscapes
+from datasets.rellis import Rellis
 
 
 parser = argparse.ArgumentParser()
@@ -114,7 +110,16 @@ def main():
       criterion = nn.CrossEntropyLoss(ignore_index=255) 
       # only using gpu:0 (NVIDIA TITAN RTX) bc it is much more powerful than
       # my gpu:1 (NVIDIA GeForce RTX 2060) and that causes gpu:1 to be a bottle neck
-      model = nn.DataParallel(model, device_ids=[0])
+      if use_cuda:
+        model = nn.DataParallel(model, device_ids=[0])
+
+      # PyTorch grabs the optimization parameters slightly different shown here:
+      # https://github.com/pytorch/vision/blob/main/torchvision/models/segmentation/_utils.py
+      # Their backbone and and classifier is defined here:
+      # https://github.com/pytorch/vision/blob/main/torchvision/models/segmentation/deeplabv3.py
+      # Where class DeepLabV3 uses inheritance defined here:
+      # https://github.com/pytorch/vision/blob/main/torchvision/models/segmentation/_utils.py
+      # I am also not sure why you cannot just use model.parameters() in optim.SGD()
 
       # Pull layer parameters from ResNet class in deeplabv3.py
       backbone_params = (
