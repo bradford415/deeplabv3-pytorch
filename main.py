@@ -207,11 +207,14 @@ def main():
 
     else:  # Inference
         model = model.eval()  # Required to set BN layers to eval mode
+        print('=> loading checkpoint {0}'.format(model_fpath.split('/')[-1] % args.epochs))
         checkpoint = torch.load(model_fpath % args.epochs, map_location=device)
+        print('=> loaded checkpoint {0} (epoch {1})'.format(
+                    model_fpath.split('/')[-1] % args.epochs, checkpoint['epoch']))
         # Because the model was trained with nn.DataParallel each layer is wrapped
-        # in a .module(). WE are not inferencing with DataParallel so we have
+        # in a .module(). We are not inferencing with DataParallel so we have
         # to remove the 'module.' in front of each layer or else it will not
-        # be able to find those layers. Start the key name at element 7
+        # be able to find those layers. Starting the key name at element 7
         # will remove this 'module.' This is what the following line does.
         state_dict = {k[7:]: v for k,
                     v in checkpoint['model'].items() if 'tracked' not in k}
@@ -219,10 +222,12 @@ def main():
         model.load_state_dict(state_dict)
         if args.dataset == 'pascal':
             cmap = loadmat('data/pascal/pascal_seg_colormap.mat')['colormap']
+            cmap = (cmap * 255).astype(np.uint8).flatten().tolist()
+        elif args.dataset == 'rellis':
+            cmap = np.array(dataset.color_map).flatten().tolist()
         else:
             raise ValueError(
                 'Unknown colormap for dataset: {}'.format(args.dataset))
-        cmap = (cmap * 255).astype(np.uint8).flatten().tolist()
 
         dataset_loader = torch.utils.data.DataLoader(dataset, **test_kwargs)
 

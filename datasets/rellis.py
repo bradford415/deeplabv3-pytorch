@@ -11,7 +11,7 @@ from pathlib import Path
 import numpy as np
 from utils import preprocess
 from PIL import Image
-
+import glob
 
 class Rellis3D(Dataset):
     CLASSES = [
@@ -30,9 +30,30 @@ class Rellis3D(Dataset):
         self.masks = self._get_files(dataset_split, 'id')
         assert len(self.images) == len(self.masks)
 
+        self.color_map = [
+            [0, 0, 0], # void
+            #[108, 64, 20], # dirt
+            [0, 102, 0], # grass
+            [0, 255, 0], # tree
+            [0, 153, 153], # pole
+            [0, 128, 255], # water
+            [0, 0, 255], # sky
+            [255, 255, 0], # vehicle
+            [255, 0, 127], # object
+            [64, 64, 64], # asphalt
+            [255, 0, 0], # building
+            [102, 0, 0], # log
+            [204, 153, 255], # person
+            [102, 0, 204], # fence
+            [255, 153, 204], # bush
+            [170, 170, 170], # concrete
+            [41, 121, 255], # barrier
+            [134, 255, 239], # puddle
+            [99, 66, 34], # mud
+            [110, 22, 138]] # rubble
+        
         # Used to map the current id labels (masks) to the right class.
-        # Function is used to transform the mask
-        self.label_mapping = {0: 0,
+        self.label_mapping = {0: 0, 
                               1: 0,
                               3: 1,
                               4: 2,
@@ -78,10 +99,9 @@ class Rellis3D(Dataset):
         _target = Image.open(self.masks[index])
 
         # Convert PIL Image to np array in order to convert the label, then convert back to PIL Image
-        _target = np.array(_img)        
+        _target = np.array(_target)        
         _target = self.convert_label(_target)
         _target = Image.fromarray(_target)
-
         _img, _target = preprocess(_img,
                                 _target,
                                 flip=True if self.train else False,
@@ -92,7 +112,8 @@ class Rellis3D(Dataset):
     
     def _get_files(self, dataset_split, data_type):
         dataset_path = os.path.join(self.root, 'Rellis-3D-camera-split', dataset_split, data_type)
-        filenames = list(Path(dataset_path).rglob('*.*'))
+        #filenames = list(Path(dataset_path).rglob('*.*'))
+        filenames = glob.glob(os.path.join(dataset_path,'*.*'))
         return sorted(filenames)
         
     def __len__(self):

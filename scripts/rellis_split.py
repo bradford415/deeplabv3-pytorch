@@ -12,6 +12,9 @@ This script creates 5 directories:
     rellis-3d-split -> unlabled
 Each newly made directory is checked for duplicates (different file extensions)
 and 1 file of the duplicates is kept.
+
+Should probably change this to use glob.glob instead of rglob
+so I can avoid using PosixPath objects
 """
 import os
 import shutil
@@ -66,7 +69,8 @@ def split_train_test_files(image_names, label_names, test_ratio=percent_split):
 def remove_dupe_files(files_list):
     """Remove duplicate files in a list but keep at least 1.
     Example: if there are 3 duplicate files (most likely due to different file extensions),
-    delete 2 of these files.
+    delete 2 of these files. Should probably change this to use glob.glob
+    so you won't need to pass a posixpath object.
 
     Args:
         files_stem_list (list): List of file paths which have a .stem property.
