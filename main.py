@@ -73,7 +73,7 @@ def main():
     model_fname = 'deeplabv3_{0}_{1}_{2}_epoch%d.pth'.format(
         args.backbone, args.dataset, args.experiment)
     model_path = os.path.join('data', model_dirname)
-    model_fpath = os.path.join('data', model_dirname, model_fname)
+    model_fpath = os.path.join('output', model_dirname, model_fname)
     Path(model_path).mkdir(parents=True, exist_ok=True)
 
     if args.dataset == 'pascal':

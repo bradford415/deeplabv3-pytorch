@@ -8,6 +8,9 @@ data/pascal/*
 !data/pascal/val.txt
 
 data/rellis/*
-
-
 data/deeplab*
+
+# ignore output directory except 2 directories inside it 
+output/*
+!output/example_output/
+!output/visualizations/example_image.png
