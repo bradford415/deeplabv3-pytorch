@@ -5,6 +5,9 @@ After understanding and implementing DeepLabv3, the model was trained and infere
 
 This project includes most aspects of the DeepLabv3 paper such as a ResNet backbone modified for DeepLab and atrous spatial pyramid pooling (ASPP).  Unfortunately, I was not able to implement the multi-grid due to confusion and time constraints for my project. The model still achieves an mIoU score of __73.90%__ on the augmented pascal voc 2012 dataset.
 
+## TODO
+1. Add section for running rellis
+
 ## Setup for a local machine
 ### Installation
 Clone this github repository
