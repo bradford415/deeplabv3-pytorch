@@ -1,16 +1,24 @@
 __pycache__/
 .vscode
 
-# Ignore data/pascal folder except certain files (!)
+# Ignore data folder except certain folders (!)
+data/
+!data/pascal/
+
+# Ignore everything in data/pascal except certain files
 data/pascal/*
 !data/pascal/pascal_seg_colormap.mat
 !data/pascal/train_aug.txt
 !data/pascal/val.txt
 
-data/rellis/*
-data/deeplab*
+#data/rellis/*
+#data/deeplab*
 
 # ignore output directory except 2 directories inside it 
 output/*
 !output/example_output/
+!output/visualizations/
+
+# ignore everything in visualizations exept 1 file
+output/visualizations/*
 !output/visualizations/example_image.png
