@@ -118,6 +118,8 @@ class BottleNeck(nn.Module):
         # self.downsample when stride > 1
         self.conv1 = conv(inplanes, planes, kernel_size=1, bias=False)
         self.bn1 = norm(planes)
+        # BottleNeck is formed here bc conv1 has fewer output channels (planes) than input channels (inplanes)
+        # Similarily, Conv3 takes fewer input channels and output greater channels.
         self.conv2 = conv(planes, planes, kernel_size=3, stride=stride,
                                dilation=dilation, padding=dilation, bias=False)
         self.bn2 = norm(planes)
