@@ -26,7 +26,7 @@ class AverageMeter(object):
 
     def initialize(self, val, n):
         self.val = val
-        self.sum = val * n
+        self.sum = val * n 
         self.count = n
         self.avg = val
         self.ema = val
@@ -34,8 +34,8 @@ class AverageMeter(object):
 
     def add(self, val, n):
         self.val = val
-        self.sum += val * n
-        self.count += n
+        self.sum += val * n # count of pixels per class (used for intersection and union)
+        self.count += n # n = number of images being passed into AverageMeter (usually always 1)
         self.avg = self.sum / self.count
         self.ema = self.ema * 0.99 + self.val * 0.01
 
