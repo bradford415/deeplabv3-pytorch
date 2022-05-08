@@ -14,7 +14,7 @@ data/pascal/*
 
 # Ignore everything in data/rellis except certain files
 data/rellis/*
-!data/relllis/.gitkeep
+!data/rellis/.gitkeep
 
 # Ignore output directory except 2 directories inside it 
 output/*
