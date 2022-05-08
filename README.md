@@ -63,9 +63,10 @@ After training a model and running inference, a random image can be visualized u
 
 __Label a segmented image__
 
-Need to specify ```--label_image``` and the path to the inference folder
+Need to specify ```--label_image``` and the path to the inference folder.
 ```bash
 cd scripts
 python visualize.py --label_image --images_path output/example_output/inference
 ```
-
+label image example output
+![label_image](output/visualizations/example_image.png)
