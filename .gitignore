@@ -5,6 +5,7 @@ __pycache__/
 data/
 !data/pascal/
 !data/rellis/
+!data/temp.txt
 
 # Ignore everything in data/pascal except certain files
 data/pascal/*
