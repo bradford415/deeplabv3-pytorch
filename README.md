@@ -29,7 +29,7 @@ bash train.sh
 ```
 or
 ```bash
-python main.py --train --experiment bn_lr7e-3 --backbone resnet101 --dataset pascal --epochs 50 --batch_size 4 --base_lr 0.007 --crop_size 513
+python main.py --train --experiment bn_lr7e-3 --backbone resnet101 --dataset pascal --epochs 50 --batch_size 4 --base_lr 0.007
 ```
 A directory is created named after the command line arguments: backbone, experiment, and dataset. The trained model and checkpoints are stored here. Checkpoints are saved at every 10 epoch intervals.
 
@@ -42,14 +42,15 @@ During inference, the epoch, iteration, and loss will be printed. When inference
 
 ## Preparing Datasets
 ### Preparing Rellis-3D camer dataset
-First, manually download the camera dataset [Here](https://drive.google.com/file/d/1F3Leu0H_m6aPVpZITragfreO_SGtL2yV/view) and move the .zip folder into ```data/rellis/```. Next, extract ```Rellis_3D_pylon_camera_node.zip```, split the data into train/test set using the ```rellis_split.py``` script, and adjust command-line arguments in ```train.sh``` and ```inference.sh``` using the commands below:
-```{bash}
+First, manually download the camera dataset [Here](https://drive.google.com/file/d/1F3Leu0H_m6aPVpZITragfreO_SGtL2yV/view) and move the .zip folder into ```data/rellis/```. Next, extract ```Rellis_3D_pylon_camera_node.zip```and split the data into train/test (30% test data) set using the ```rellis_split.py``` script using the commands below:
+```bash
 cd data/rellis # Starting from project root directory
 unzip Rellis_3D_pylon_camera_node.zip
 cd ../../scripts
 python rellis_split.py
 ```
-
+Finally, using a text editor change the ```--dataset``` command-line arguments in ```train.sh``` and ```inference.sh``` to ```rellis``` 
+or on the command-line if not using the ```.sh``` scripts.
 
 ### Preparing augmented pascal voc 2012 dataset
 First, manually download the augmented dataset [Here](https://www.dropbox.com/s/oeu149j8qtbs1x0/SegmentationClassAug.zip?dl=0) provided by [DrSleep](https://github.com/DrSleep/tensorflow-deeplab-resnet) and move the .zip folder into ```data/pascal/```. It contains ```10582``` images for training and ```1449``` images for validation. Next, finish preparation by extracting the ```SegmentationClassAug.zip``` and downloading the Pascal jpg images with the following commands:
