@@ -39,10 +39,22 @@ Once you have a trained model, to test the model run the ```inference.sh``` scri
 bash inference.sh
 ```
 During inference, the epoch, iteration, and loss will be printed. When inference is finished, the segmented images will be saved, the IoU of each class and the final mIoU for the test set are printed out and saved to a text file. This is all stored in the ```data/<experiment>``` directory.
+
+### Preparing Datasets
+## Preparing Rellis-3D camer dataset
+First, manually download the camera dataset [Here](https://drive.google.com/file/d/1F3Leu0H_m6aPVpZITragfreO_SGtL2yV/view) and move the .zip folder into ```data/rellis/```. Next, extract ```Rellis_3D_pylon_camera_node.zip```, split the data into train/test set using the ```rellis_split.py``` script, and adjust command-line arguments in ```train.sh``` and ```inference.sh``` using the commands below:
+```{bash}
+cd data/rellis # Starting from project root directory
+unzip Rellis_3D_pylon_camera_node.zip
+cd ../../scripts
+python rellis_split.py
+```
+
+
 ## Preparing augmented pascal voc 2012 dataset
-First, manually download the augmented data set [Here](https://www.dropbox.com/s/oeu149j8qtbs1x0/SegmentationClassAug.zip?dl=0) provided by [DrSleep](https://github.com/DrSleep/tensorflow-deeplab-resnet) and move the .zip folder into ```data/pascal/```. It contains ```10582``` images for training and ```1449``` images for validation. Next, finish preparation by extracting the ```SegmentationClassAug.zip``` and downloading the Pascal jpg images with the following commands:
+First, manually download the augmented dataset [Here](https://www.dropbox.com/s/oeu149j8qtbs1x0/SegmentationClassAug.zip?dl=0) provided by [DrSleep](https://github.com/DrSleep/tensorflow-deeplab-resnet) and move the .zip folder into ```data/pascal/```. It contains ```10582``` images for training and ```1449``` images for validation. Next, finish preparation by extracting the ```SegmentationClassAug.zip``` and downloading the Pascal jpg images with the following commands:
 ```bash
-cd data/pascal
+cd data/pascal # Starting from project root directory
 unzip SegmentationClassAug.zip
 wget http://host.robots.ox.ac.uk/pascal/VOC/voc2012/VOCtrainval_11-May-2012.tar
 tar -xf VOCtrainval_11-May-2012.tar
