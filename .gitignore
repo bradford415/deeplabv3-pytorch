@@ -2,22 +2,19 @@ __pycache__/
 .vscode
 
 # Ignore data folder except certain folders (!)
-data/
+data/*
 !data/pascal/
 !data/rellis/
-!data/temp.txt
 
 # Ignore everything in data/pascal except certain files
 data/pascal/*
 !data/pascal/pascal_seg_colormap.mat
 !data/pascal/train_aug.txt
 !data/pascal/val.txt
-!data/pascal/test.txt
 
 # Ignore everything in data/rellis except certain files
 data/rellis/*
 !data/rellis/.gitkeep
-!data/rellis/test.txt
 
 # Ignore output directory except 2 directories inside it 
 output/*
