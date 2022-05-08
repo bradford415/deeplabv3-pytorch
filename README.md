@@ -5,9 +5,6 @@ After understanding and implementing DeepLabv3, the model was trained and infere
 
 This project includes most aspects of the DeepLabv3 paper such as a ResNet backbone modified for DeepLab and atrous spatial pyramid pooling (ASPP).  Unfortunately, I was not able to implement the multi-grid due to confusion and time constraints for my project. The model still achieves an mIoU score of __73.90%__ on the augmented pascal voc 2012 dataset.
 
-## TODO
-1. Add section for running rellis
-
 ## Setup for a local machine
 ### Installation
 Clone this github repository
@@ -59,5 +56,15 @@ cd data/pascal # Starting from project root directory
 unzip SegmentationClassAug.zip
 wget http://host.robots.ox.ac.uk/pascal/VOC/voc2012/VOCtrainval_11-May-2012.tar
 tar -xf VOCtrainval_11-May-2012.tar
+```
+
+## Visualization
+After training a model and running inference, a random image can be visualized using the ```visualize.py``` script. This script grabs a random image from the ```output/<experiement_name>/inference``` directory, adds a legend to it for each class and saves it to a ```.png``` file in the ```output/visualizations``` directory. Currently, this script only supports rellis image visualizations.
+
+__Label a segmented image__
+Need to specify ```--label_image``` and the path to the inferenc folder
+```bash
+cd scripts
+python visualize.py --label_image --images_path output/example_output/inference
 ```
 
