@@ -42,7 +42,7 @@ During inference, the epoch, iteration, and loss will be printed. When inference
 
 ## Preparing Datasets
 ### Preparing Rellis-3D camer dataset
-First, manually download the camera dataset [Here](https://drive.google.com/file/d/1F3Leu0H_m6aPVpZITragfreO_SGtL2yV/view) and move the .zip folder into ```data/rellis/```. Next, extract ```Rellis_3D_pylon_camera_node.zip```and split the data into train/test (30% test data) set using the ```rellis_split.py``` script using the commands below:
+First, manually download the camera dataset [Here](https://drive.google.com/file/d/1F3Leu0H_m6aPVpZITragfreO_SGtL2yV/view) and move the .zip folder into ```data/rellis/```. Next, extract ```Rellis_3D_pylon_camera_node.zip```and split the data into train/test (30% test data) set using the ```rellis_split.py``` script with the following commands:
 ```bash
 cd data/rellis # Starting from project root directory
 unzip Rellis_3D_pylon_camera_node.zip
