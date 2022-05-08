@@ -62,7 +62,8 @@ tar -xf VOCtrainval_11-May-2012.tar
 After training a model and running inference, a random image can be visualized using the ```visualize.py``` script. This script grabs a random image from the ```output/<experiement_name>/inference``` directory, adds a legend to it for each class and saves it to a ```.png``` file in the ```output/visualizations``` directory. Currently, this script only supports rellis image visualizations.
 
 __Label a segmented image__
-Need to specify ```--label_image``` and the path to the inferenc folder
+
+Need to specify ```--label_image``` and the path to the inference folder
 ```bash
 cd scripts
 python visualize.py --label_image --images_path output/example_output/inference
