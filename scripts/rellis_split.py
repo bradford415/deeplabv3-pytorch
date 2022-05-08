@@ -27,9 +27,10 @@ percent_split = 0.3 # 30% test split data
 
 # Define root paths to dataset and the paths to the new direcotries
 ROOT_DIR = os.getcwd() # path to this script
-HOME = str(Path.home())
-RELLIS_PATH = os.path.join(HOME, 'datasets/Rellis-3D-camera')
-NEW_DATA_ROOT = os.path.join(HOME, 'datasets/Rellis-3D-camera-split') # dir that will be created
+# HOME = str(Path.home()) # Root of computer
+HOME = str('..') # Root of deeplabv3-pytorch repo
+RELLIS_PATH = os.path.join(HOME, 'data/rellis/Rellis_3D_pylon_camera_node')
+NEW_DATA_ROOT = os.path.join(HOME, 'data/rellis/rellis-3D-camera-split') # dir that will be created
 RGB_TRAIN = os.path.join(NEW_DATA_ROOT, 'train/rgb')
 ID_TRAIN = os.path.join(NEW_DATA_ROOT,'train/id')
 RGB_TEST = os.path.join(NEW_DATA_ROOT,'test/rgb')
@@ -40,6 +41,7 @@ VIDEOS = ['00000', '00001', '00002', '00003', '00004']
 RGB_IMAGES = os.path.join(RELLIS_PATH, '%s', 'pylon_camera_node')
 ID_IMAGES = os.path.join(RELLIS_PATH, '%s', 'pylon_camera_node_label_id')
 
+assert os.path.isdir(RELLIS_PATH)
 
 # Delete dir if exists for a fresh start
 shutil.rmtree(NEW_DATA_ROOT, ignore_errors=True)
@@ -127,6 +129,7 @@ remove_dupe_files(rgb_unlabeled)
 print(f'\nSplitting RGB and Id images to a {(1-percent_split)*100}% train and {percent_split*100}% test set')
 X_train, X_test, y_train, y_test = split_train_test_files(rgb_files, id_files, percent_split)
 
+
 print('\nCopying train/test split files to their new directory')
 for file in X_train:
     shutil.copyfile(file, os.path.join(RGB_TRAIN, file.name))
@@ -138,4 +141,3 @@ for file in y_test:
     shutil.copyfile(file, os.path.join(ID_TEST, file.name))
 for file in rgb_unlabeled:
     shutil.copyfile(file, os.path.join(UNLABELED, file.name))
-                

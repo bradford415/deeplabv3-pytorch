@@ -1,3 +1,4 @@
+"""Script to create visuals of the segmented images"""
 import os
 import glob
 import argparse

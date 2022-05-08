@@ -72,10 +72,11 @@ def main():
         args.backbone, args.dataset, args.experiment)
     model_fname = 'deeplabv3_{0}_{1}_{2}_epoch%d.pth'.format(
         args.backbone, args.dataset, args.experiment)
-    model_path = os.path.join('data', model_dirname)
+    model_path = os.path.join('output', model_dirname)
     model_fpath = os.path.join('output', model_dirname, model_fname)
     Path(model_path).mkdir(parents=True, exist_ok=True)
 
+    # Crop size is currently hard coded but can be changed to use args.crop_size
     if args.dataset == 'pascal':
         dataset = VOCSegmentation('data/pascal',
                                   train=args.train, crop_size=513)#crop_size=args.crop_size)
@@ -255,10 +256,10 @@ def main():
                     image_name = dataset.masks[mask_index].split('/')[-1]
                     mask_pred = Image.fromarray(image_pred)
                     mask_pred.putpalette(cmap)
-                    Path(os.path.join('data', model_dirname, 'inference')).mkdir(
+                    Path(os.path.join(model_path, 'inference')).mkdir(
                         parents=True, exist_ok=True)
                     mask_pred.save(os.path.join(
-                        'data', model_dirname, 'inference', image_name))
+                        model_path, 'inference', image_name))
                     print('eval: {0}/{1}'.format(mask_index + 1, len(dataset)))
                     inter, union = inter_and_union(
                         image_pred, image_mask, len(dataset.CLASSES))

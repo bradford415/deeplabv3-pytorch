@@ -4,6 +4,7 @@ __pycache__/
 # Ignore data folder except certain folders (!)
 data/
 !data/pascal/
+!data/rellis/
 
 # Ignore everything in data/pascal except certain files
 data/pascal/*
@@ -11,14 +12,15 @@ data/pascal/*
 !data/pascal/train_aug.txt
 !data/pascal/val.txt
 
-#data/rellis/*
-#data/deeplab*
+# Ignore everything in data/rellis except certain files
+data/rellis/*
+!data/relllis/.gitkeep
 
-# ignore output directory except 2 directories inside it 
+# Ignore output directory except 2 directories inside it 
 output/*
 !output/example_output/
 !output/visualizations/
 
-# ignore everything in visualizations exept 1 file
+# Ignore everything in visualizations exept 1 file
 output/visualizations/*
 !output/visualizations/example_image.png
