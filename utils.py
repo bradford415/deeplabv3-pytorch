@@ -44,13 +44,15 @@ def inter_and_union(pred, mask, num_class):
     pred = np.asarray(pred, dtype=np.uint8).copy()
     mask = np.asarray(mask, dtype=np.uint8).copy()
 
+    # Shift classes by 1. Because unit8 is 8 bits values of 255 become 0.
     # 255 -> 0
     pred += 1
     mask += 1
-    pred = pred * (mask > 0)
-
-    inter = pred * (pred == mask)
-    (area_inter, _) = np.histogram(inter, bins=num_class, range=(1, num_class))
+    pred = pred * (mask > 0) # I am not sure the purpose of this line because 0 values will still be 0
+                             # and values > 0 will still be the same value
+    
+    inter = pred * (pred == mask) # Create map of where pred and maks (label) are equal aka intersection
+    (area_inter, _) = np.histogram(inter, bins=num_class, range=(1, num_class)) # Range starts at 1 because we increment by 1 a few lines above
     (area_pred, _) = np.histogram(pred, bins=num_class, range=(1, num_class))
     (area_mask, _) = np.histogram(mask, bins=num_class, range=(1, num_class))
     area_union = area_pred + area_mask - area_inter
