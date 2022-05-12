@@ -53,7 +53,7 @@ def inter_and_union(pred, mask, num_class):
     
     inter = pred * (pred == mask) # Create map of where pred and maks (label) are equal aka intersection
     (area_inter, _) = np.histogram(inter, bins=num_class, range=(1, num_class)) # Range starts at 1 because we increment by 1 a few lines above
-    (area_pred, _) = np.histogram(pred, bins=num_class, range=(1, num_class))
+    (area_pred, _) = np.histogram(pred, bins=num_class, range=(1, num_class))   # and we do not want to include the 0 class after incrementing
     (area_mask, _) = np.histogram(mask, bins=num_class, range=(1, num_class))
     area_union = area_pred + area_mask - area_inter
 
