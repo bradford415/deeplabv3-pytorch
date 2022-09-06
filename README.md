@@ -38,7 +38,7 @@ bash inference.sh
 During inference, the epoch, iteration, and loss will be printed. When inference is finished, the segmented images will be saved, the IoU of each class and the final mIoU for the test set are printed out and saved to a text file. This is all stored in the ```data/<experiment>``` directory.
 
 ## Preparing Datasets
-### Preparing Rellis-3D camer dataset
+### Preparing Rellis-3D camera dataset
 First, manually download the camera dataset [Here](https://drive.google.com/file/d/1F3Leu0H_m6aPVpZITragfreO_SGtL2yV/view) and move the .zip folder into ```data/rellis/```. Next, extract ```Rellis_3D_pylon_camera_node.zip```and split the data into train/test (30% test data) set using the ```rellis_split.py``` script with the following commands:
 ```bash
 cd data/rellis # Starting from project root directory
