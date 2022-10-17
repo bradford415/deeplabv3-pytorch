@@ -6,21 +6,21 @@ data/*
 !data/pascal/
 !data/rellis/
 
-# Ignore everything in data/pascal except certain files
+# Ignore everything in data/pascal except certain files (!)
 data/pascal/*
 !data/pascal/pascal_seg_colormap.mat
 !data/pascal/train_aug.txt
 !data/pascal/val.txt
 
-# Ignore everything in data/rellis except certain files
+# Ignore everything in data/rellis except certain files (!)
 data/rellis/*
 !data/rellis/.gitkeep
 
-# Ignore output directory except 2 directories inside it 
+# Ignore output directory except 2 directories inside it (!)
 output/*
 !output/example_output/
 !output/visualizations/
 
-# Ignore everything in visualizations exept 1 file
+# Ignore everything in visualizations exept 1 file (!)
 output/visualizations/*
 !output/visualizations/example_image.png
