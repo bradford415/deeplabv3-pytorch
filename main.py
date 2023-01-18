@@ -125,7 +125,9 @@ def main():
         # https://github.com/pytorch/vision/blob/main/torchvision/models/segmentation/deeplabv3.py
         # Where class DeepLabV3 uses inheritance defined here:
         # https://github.com/pytorch/vision/blob/main/torchvision/models/segmentation/_utils.py
-        # I am also not sure why you cannot just use model.parameters() in optim.SGD()
+        # I am also not sure why you cannot just use model.parameters() in optim.SGD() -
+        # In another example they grab the backbone params and the aspp params but set a 
+        # different learning rate for the backbone and aspp in the optimizer
 
         # Pull layer parameters from ResNet class in deeplabv3.py
         backbone_params = (
