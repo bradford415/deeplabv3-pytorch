@@ -48,9 +48,8 @@ def inter_and_union(pred, mask, num_class):
     # 255 -> 0
     pred += 1
     mask += 1
-    pred = pred * (mask > 0) # I am not sure the purpose of this line because 0 values will still be 0
-                             # and values > 0 will still be the same value
-    
+    pred = pred * (mask > 0) # Ignore index is now 0, so if pred[i][j] > 0 it will be set back to 0 
+                             # because that pixels shouldn't count
     inter = pred * (pred == mask) # Create map of where pred and maks (label) are equal aka intersection
     (area_inter, _) = np.histogram(inter, bins=num_class, range=(1, num_class)) # Range starts at 1 because we increment by 1 a few lines above
     (area_pred, _) = np.histogram(pred, bins=num_class, range=(1, num_class))   # and we do not want to include the 0 class after incrementing
